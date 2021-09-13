@@ -529,6 +529,16 @@
 			<locationURI>STUDIO_SDK_LOC/platform/service/udelay/src/sl_udelay_armv6m_gcc.S</locationURI>
 		</link>
 		<link>
+			<name>gecko_sdk_3.2.1/app/flex/component/rail/sl_flex_rail_sleep/sl_flex_rail_sleep.c</name>
+			<type>1</type>
+			<locationURI>STUDIO_SDK_LOC/app/flex/component/rail/sl_flex_rail_sleep/sl_flex_rail_sleep.c</locationURI>
+		</link>
+		<link>
+			<name>gecko_sdk_3.2.1/app/flex/component/rail/sl_flex_rail_sleep/sl_flex_rail_sleep.h</name>
+			<type>1</type>
+			<locationURI>STUDIO_SDK_LOC/app/flex/component/rail/sl_flex_rail_sleep/sl_flex_rail_sleep.h</locationURI>
+		</link>
+		<link>
 			<name>gecko_sdk_3.2.1/hardware/driver/mx25_flash_shutdown/inc/sl_mx25_flash_shutdown_usart/sl_mx25_flash_shutdown.h</name>
 			<type>1</type>
 			<locationURI>STUDIO_SDK_LOC/hardware/driver/mx25_flash_shutdown/inc/sl_mx25_flash_shutdown_usart/sl_mx25_flash_shutdown.h</locationURI>

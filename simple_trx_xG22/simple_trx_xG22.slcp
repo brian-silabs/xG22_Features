@@ -40,6 +40,7 @@ component:
 - {id: EFR32MG22C224F512IM40}
 - {id: sl_simple_rail_stub}
 - {id: device_init}
+- {id: sl_flex_rail_sleep}
 - {id: rail_util_recommended}
 template_contribution:
 - name: cli_command

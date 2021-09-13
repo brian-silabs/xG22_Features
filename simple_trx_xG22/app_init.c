@@ -39,6 +39,7 @@
 #include "sl_simple_led_instances.h"
 #include "sl_rail_util_init_inst0_config.h"
 #include "sl_rail_util_protocol_types.h"
+#include "rail_ble.h"
 #include "rail_config.h"
 
 #include "sl_power_manager.h"
@@ -66,7 +67,7 @@ static void validation_check(void);
 // -----------------------------------------------------------------------------
 //                                Static Variables
 // -----------------------------------------------------------------------------
-
+static RAIL_Status_t status_g;
 // -----------------------------------------------------------------------------
 //                          Public Function Definitions
 // -----------------------------------------------------------------------------
@@ -81,9 +82,27 @@ RAIL_Handle_t app_init(void)
   // Get RAIL handle, used later by the application
   RAIL_Handle_t rail_handle = sl_rail_util_get_handle(SL_RAIL_UTIL_HANDLE_INST0);
 
+  // Always choose the Viterbi PHY configuration if available on your chip
+  // for performance reasons.
+  status_g = RAIL_BLE_ConfigPhy1MbpsViterbi(rail_handle);
+  if (status_g != RAIL_STATUS_NO_ERROR) {
+      return 0;
+  }
+  // Configures us for the first advertising channel (Physical: 0, Logical: 37).
+  // The CRC init value and Access Address come from the BLE specification.
+  status_g = RAIL_BLE_ConfigChannelRadioParams(rail_handle,
+                                    0x555555,
+                                    0x8E89BED6,
+                                    37,
+                                    false);
+
+  if (status_g != RAIL_STATUS_NO_ERROR) {
+      return 0;
+  }
+
   set_up_tx_fifo(rail_handle);
 
-  sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM2);
+  //sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM2);
 
   // Turn OFF LEDs
   sl_led_turn_off(&sl_led_led0);
@@ -106,6 +125,6 @@ RAIL_Handle_t app_init(void)
 *****************************************************************************/
 static void validation_check(void)
 {
-  _Static_assert(SL_RAIL_UTIL_INIT_PROTOCOL_INST0_DEFAULT == SL_RAIL_UTIL_PROTOCOL_PROPRIETARY,
+  _Static_assert(SL_RAIL_UTIL_INIT_PROTOCOL_INST0_DEFAULT == SL_RAIL_UTIL_PROTOCOL_BLE_1MBPS,
                  "Please use the Flex (RAIL) - Simple TRX Standards sample app instead, which is designed to show the protocol usage.");
 }

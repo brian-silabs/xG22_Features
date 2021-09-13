@@ -39,9 +39,6 @@
 #include "sl_simple_led_instances.h"
 #include "rail_config.h"
 
-#include "sl_power_manager.h"
-
-
 #if defined(SL_CATALOG_KERNEL_PRESENT)
 #include "app_task_init.h"
 #endif
@@ -63,6 +60,18 @@ typedef enum {
   S_CALIBRATION_ERROR,
   S_IDLE,
 } state_t;
+
+//payload consts
+const uint8_t address[] = {0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA};
+//the following array is written line by line
+//each line is an AD structure defined by GAP
+//it's always {length, type, payload bytes}
+const uint8_t advData[] = {
+        0x02, 0x01, 0x02|0x04, //Flags: LE general discoverable, BT classic not supported
+    0x07, 0x08, 'B', 'r', 'i', 'a', 'n', '0', //Short name "Brian0"
+};
+
+const uint8_t advDataLen = 2;
 
 // -----------------------------------------------------------------------------
 //                          Static Function Declarations
@@ -86,7 +95,7 @@ static uint16_t unpack_packet(uint8_t *rx_destination, const RAIL_RxPacketInfo_t
  * @param out_data The payload buffer
  * @param length The length of the payload
  *****************************************************************************/
-static void prepare_package(RAIL_Handle_t rail_handle, uint8_t *out_data, uint16_t length);
+static void prepare_package(RAIL_Handle_t rail_handle);
 
 // -----------------------------------------------------------------------------
 //                                Global Variables
@@ -121,10 +130,36 @@ static union {
 } tx_fifo;
 
 /// Transmit packet
-static uint8_t out_packet[TX_PAYLOAD_LENGTH] = {
-  0x0F, 0x16, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
-  0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE,
-};
+
+typedef enum PDUType_t {
+  PDU_ADV_IND = 0,
+  PDU_ADV_DIRECT = 1,
+  PDU_ADV_NONCONN = 2,
+  PDU_ADV_SCAN = 6,
+} PDUType_t;
+
+typedef enum AdvAddr_t {
+  ADV_ADDRESS_PUBLIC = 0,
+  ADV_ADDRESS_RANDOM = 1,
+} AdvAddr_t;
+
+typedef struct ble_adv_header_t {
+  PDUType_t PDUType:4;
+  uint8_t RFU:2;
+  AdvAddr_t TxAdd:1;
+  AdvAddr_t RxAdd:1;
+  uint8_t length:6;
+  uint8_t RFU2:2;
+} ble_adv_header_t;
+
+
+typedef struct packet_t{
+  ble_adv_header_t header;
+  uint8_t payload[37];
+} packet_t;
+
+packet_t txData;
+
 
 /// Flags to update state machine from interrupt
 static volatile bool packet_recieved = false;
@@ -181,17 +216,17 @@ void app_process_action(RAIL_Handle_t rail_handle)
         if (rx_requested) {
 
         }
-        sl_led_toggle(&sl_led_led0);
+        //sl_led_toggle(&sl_led_led0);
         rx_packet_handle = RAIL_GetRxPacketInfo(rail_handle, RAIL_RX_PACKET_HANDLE_OLDEST_COMPLETE, &packet_info);
       }
       state = S_IDLE;
-      sl_power_manager_sleep();
+      //sl_power_manager_sleep();
       break;
     case S_PACKET_SENT:
 #if defined(SL_CATALOG_LED1_PRESENT)
-      sl_led_toggle(&sl_led_led1);
+      //sl_led_toggle(&sl_led_led1);
 #else
-      sl_led_toggle(&sl_led_led0);
+      //sl_led_toggle(&sl_led_led0);
 #endif
       state = S_IDLE;
       break;
@@ -205,10 +240,10 @@ void app_process_action(RAIL_Handle_t rail_handle)
       break;
     case S_IDLE:
       if (tx_requested) {
-        prepare_package(rail_handle, out_packet, sizeof(out_packet));
+        prepare_package(rail_handle);
         rail_status = RAIL_StartTx(rail_handle, CHANNEL, RAIL_TX_OPTIONS_DEFAULT, NULL);
         if (rail_status != RAIL_STATUS_NO_ERROR) {
-
+            state = S_TX_PACKET_ERROR;
         }
         tx_requested = false;
       }
@@ -310,12 +345,25 @@ static uint16_t unpack_packet(uint8_t *rx_destination, const RAIL_RxPacketInfo_t
 /******************************************************************************
  * The API prepares the packet for sending and load it in the RAIL TX FIFO
  *****************************************************************************/
-static void prepare_package(RAIL_Handle_t rail_handle, uint8_t *out_data, uint16_t length)
+static void prepare_package(RAIL_Handle_t rail_handle)
 {
   // Check if write fifo has written all bytes
+  uint16_t bytes_to_write_in_fifo = 0;
   uint16_t bytes_writen_in_fifo = 0;
-  bytes_writen_in_fifo = RAIL_WriteTxFifo(rail_handle, out_data, length, true);
-  if(bytes_writen_in_fifo != TX_PAYLOAD_LENGTH)
+
+  //set up header
+  txData.header.PDUType = PDU_ADV_NONCONN;
+  txData.header.RxAdd = txData.header.TxAdd = 0;
+  txData.header.length = sizeof(advData)+sizeof(address);
+  //set up payload
+  memcpy(txData.payload, address, sizeof(address));
+  memcpy(txData.payload+sizeof(address), advData, sizeof(advData) );
+
+  //give RAIL the complete length
+  bytes_to_write_in_fifo = txData.header.length + sizeof(ble_adv_header_t);
+
+  bytes_writen_in_fifo = RAIL_WriteTxFifo(rail_handle, (uint8_t *)(&txData), bytes_to_write_in_fifo, true);
+  if(bytes_writen_in_fifo != bytes_to_write_in_fifo)
     {
 
     }

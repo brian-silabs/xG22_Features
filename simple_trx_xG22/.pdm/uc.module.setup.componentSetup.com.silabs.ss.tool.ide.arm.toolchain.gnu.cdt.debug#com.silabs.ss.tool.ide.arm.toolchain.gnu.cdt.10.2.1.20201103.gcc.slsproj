@@ -344,6 +344,18 @@
         </folder>
       </folder>
     </folder>
+    <folder name="app">
+      <folder name="flex">
+        <folder name="component">
+          <folder name="rail">
+            <folder name="sl_flex_rail_sleep">
+              <file name="sl_flex_rail_sleep.c" uri="studio:/sdk/app/flex/component/rail/sl_flex_rail_sleep/sl_flex_rail_sleep.c"/>
+              <file name="sl_flex_rail_sleep.h" uri="studio:/sdk/app/flex/component/rail/sl_flex_rail_sleep/sl_flex_rail_sleep.h"/>
+            </folder>
+          </folder>
+        </folder>
+      </folder>
+    </folder>
   </folder>
   <file name="main.c" linked="false" uri="studio:/project/main.c"/>
   <file name="app_init.c" linked="false" uri="studio:/project/app_init.c"/>
@@ -378,6 +390,7 @@
   <includePath uri="studio:/sdk/platform/radio/rail_lib/plugin/rail_util_protocol"/>
   <includePath uri="studio:/sdk/platform/radio/rail_lib/plugin/rail_util_pti"/>
   <includePath uri="studio:/sdk/platform/radio/rail_lib/plugin/rail_util_rssi"/>
+  <includePath uri="studio:/sdk/app/flex/component/rail/sl_flex_rail_sleep"/>
   <includePath uri="studio:/sdk/platform/common/toolchain/inc"/>
   <includePath uri="studio:/sdk/platform/service/system/inc"/>
   <includePath uri="studio:/sdk/platform/service/sleeptimer/inc"/>

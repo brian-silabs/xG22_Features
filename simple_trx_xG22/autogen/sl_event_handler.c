@@ -19,6 +19,7 @@
 #include "sl_simple_button_instances.h"
 #include "sl_simple_led_instances.h"
 #include "sl_power_manager.h"
+#include "sl_flex_rail_sleep.h"
 
 void sl_platform_init(void)
 {
@@ -59,6 +60,7 @@ void sl_stack_init(void)
 
 void sl_internal_app_init(void)
 {
+  sl_flex_rail_sleep_init();
 }
 
 void sl_platform_process_action(void)

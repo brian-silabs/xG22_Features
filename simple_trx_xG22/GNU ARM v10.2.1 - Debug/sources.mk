@@ -18,6 +18,7 @@ C_DEPS :=
 SUBDIRS := \
 . \
 autogen \
+gecko_sdk_3.2.1/app/flex/component/rail/sl_flex_rail_sleep \
 gecko_sdk_3.2.1/hardware/board/src \
 gecko_sdk_3.2.1/hardware/driver/mx25_flash_shutdown/src/sl_mx25_flash_shutdown_usart \
 gecko_sdk_3.2.1/platform/Device/SiliconLabs/EFR32MG22/Source/GCC \
