@@ -1,0 +1,15 @@
+[
+  {
+    "channel_name": "Protocol_Configuration-Channel_Group_1",
+    "result_code": "0",
+    "error_message": "",
+    "logs": [
+      {
+        "type": "warning",
+        "message": [
+          "  WARNING: BW is set more than 20% away from Carson BW!"
+        ]
+      }
+    ]
+  }
+]
