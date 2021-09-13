@@ -41,6 +41,8 @@
 #include "sl_rail_util_protocol_types.h"
 #include "rail_config.h"
 
+#include "sl_power_manager.h"
+
 #if defined(SL_CATALOG_KERNEL_PRESENT)
 #include "app_task_init.h"
 #endif
@@ -81,15 +83,17 @@ RAIL_Handle_t app_init(void)
 
   set_up_tx_fifo(rail_handle);
 
+  sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM2);
+
   // Turn OFF LEDs
   sl_led_turn_off(&sl_led_led0);
 #if defined(SL_CATALOG_LED1_PRESENT)
   sl_led_turn_off(&sl_led_led1);
 #endif
   // Start reception
-  RAIL_Status_t status = RAIL_StartRx(rail_handle, CHANNEL, NULL);
-  if (status != RAIL_STATUS_NO_ERROR) {
-  }
+  //RAIL_Status_t status = RAIL_StartRx(rail_handle, CHANNEL, NULL);
+  //if (status != RAIL_STATUS_NO_ERROR) {
+  //}
 
   return rail_handle;
 }

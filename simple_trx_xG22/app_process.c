@@ -39,6 +39,8 @@
 #include "sl_simple_led_instances.h"
 #include "rail_config.h"
 
+#include "sl_power_manager.h"
+
 
 #if defined(SL_CATALOG_KERNEL_PRESENT)
 #include "app_task_init.h"
@@ -183,6 +185,7 @@ void app_process_action(RAIL_Handle_t rail_handle)
         rx_packet_handle = RAIL_GetRxPacketInfo(rail_handle, RAIL_RX_PACKET_HANDLE_OLDEST_COMPLETE, &packet_info);
       }
       state = S_IDLE;
+      sl_power_manager_sleep();
       break;
     case S_PACKET_SENT:
 #if defined(SL_CATALOG_LED1_PRESENT)

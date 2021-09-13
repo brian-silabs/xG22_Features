@@ -21,6 +21,7 @@ sdk: {id: gecko_sdk, version: 3.2.1}
 toolchain_settings:
 - {value: debug, option: optimize}
 component:
+- {id: power_manager}
 - {id: sl_flex_restrictions_wisun}
 - {id: sl_flex_restrictions_long_range}
 - {id: radio_config_simple_rail_singlephy}

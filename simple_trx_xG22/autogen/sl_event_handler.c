@@ -4,6 +4,7 @@
 #include "sl_device_init_nvic.h"
 #include "sl_board_init.h"
 #include "sl_device_init_dcdc.h"
+#include "sl_hfxo_manager.h"
 #include "sl_device_init_hfxo.h"
 #include "sl_device_init_lfxo.h"
 #include "sl_device_init_clocks.h"
@@ -12,10 +13,12 @@
 #include "sl_rail_util_pti.h"
 #include "sl_rail_util_rssi.h"
 #include "sl_rail_util_init.h"
+#include "sl_sleeptimer.h"
 #include "gpiointerrupt.h"
 #include "sl_mpu.h"
 #include "sl_simple_button_instances.h"
 #include "sl_simple_led_instances.h"
+#include "sl_power_manager.h"
 
 void sl_platform_init(void)
 {
@@ -23,11 +26,13 @@ void sl_platform_init(void)
   sl_device_init_nvic();
   sl_board_preinit();
   sl_device_init_dcdc();
+  sl_hfxo_manager_init_hardware();
   sl_device_init_hfxo();
   sl_device_init_lfxo();
   sl_device_init_clocks();
   sl_device_init_emu();
   sl_board_init();
+  sl_power_manager_init();
 }
 
 void sl_driver_init(void)
@@ -39,6 +44,8 @@ void sl_driver_init(void)
 
 void sl_service_init(void)
 {
+  sl_sleeptimer_init();
+  sl_hfxo_manager_init();
   sl_mpu_disable_execute_from_ram();
 }
 
